@@ -69,7 +69,7 @@ func getJson(mode, date string) []transform {
 }
 
 func dataReader(data string) string {
-	file, err := os.OpenFile("Pixiv.json", os.O_RDWR|os.O_CREATE, 0755)
+	file, err := os.OpenFile("../static/picture/Pixiv.json", os.O_RDWR|os.O_CREATE, 0755)
 	defer file.Close()
 	if err != nil {
 		fmt.Println("加载json错误")
@@ -87,7 +87,7 @@ func dataReader(data string) string {
 }
 
 func dataWriter(s string) {
-	err := ioutil.WriteFile("Pixiv.json", []byte(s), 0664)
+	err := ioutil.WriteFile("../static/picture/Pixiv.json", []byte(s), 0664)
 	if err != nil {
 		fmt.Println("json文件写入错误")
 	}
