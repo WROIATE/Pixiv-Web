@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style/index.css">
+    <title>Pixiv Collections</title>
+</head>
+
+<body>
+    <!--web head with background-->
+    <header style="position:relative">
+        <div class="jumbotron jumbotron-fluid bg-brightness header-bg mb-0">
+        </div>
+        <div class="content-front">
+            <h1 class="display-4 text-white text-center">Pixiv Collections</h1>
+            <p class="lead text-white text-center">P站好图收藏</p>
+        </div>
+    </header>
+    <!--sticky nav-->
+    <div class="sticky-top p-0 d-flex align-items-center mb-5"
+        style="width:100%;background-color: #050606;min-height:70px;">
+        <div class="container">
+            {{$s := .Site}}
+            <nav class="nav nav-pills  flex-sm-row justify-content-center" style="max-width:700px;margin: 0 auto;">
+                <a class="flex-sm-fill text-sm-center nav-link {{if $s.Daily}}active{{end}}" href="daily">日榜</a>
+                <a class="flex-sm-fill text-sm-center nav-link {{if $s.Weekly}}active{{end}}" href="/weekly">周榜</a>
+                <a class="flex-sm-fill text-sm-center nav-link {{if $s.Monthly}}active{{end}}" href="/monthly">月榜</a>
+            </nav>
+        </div>
+    </div>
+    <main>
+        <!--image thumbnail-->
+        <div class="container">
+            <div class="card-columns">
+                {{range $picture := .Pictures}}
+                <a class="card border-0 mb-3 shadow">
+                    <div class="sliderpic">
+                        <img class="card-img-top rounded-sm" loading="lazy" draggable="false" data-toggle="modal"
+                            data-target="#P{{$picture.Id}}" src={{$picture.Path}} alt="">
+                        <div class="pic-info" style="background-color:rgba(0,0,0,0);">
+                            <div class="post-title">{{$picture.Title}}</div>
+                            id={{$picture.Id}}
+                        </div>
+                    </div>
+                </a>
+                {{end}}
+            </div>
+        </div>
+        <!-- Modal -->
+        <div>
+            {{range $picture := .Pictures}}
+            <div class="modal fade"  id="P{{$picture.Id}}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">{{$picture.Title}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center d-block" style="position:relative" id="dynamic-content">
+                            <img class="pic" src={{$picture.Path}} alt="">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <a href="https://www.pixiv.net/artworks/{{$picture.Id}}"
+                                class="btn btn-primary">P站传送门</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{end}}
+        </div>
+    </main>
+    <footer>
+        <div class="container" style="height: 200px;">
+            <h4 class="display-4 text-white text-center mt-5">End</h4>
+        </div>
+    </footer>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+        </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script>$(function () { $('[data-toggle="tooltip"]').tooltip() })</script>
+    <script>$('#myModal').on('shown.bs.modal', function () { $('#myInput').trigger('focus') })</script>
+</body>
+
+</html>
