@@ -167,7 +167,7 @@ func Crawl(mode string) {
 	data := ""
 	os.Mkdir(dir, os.ModePerm)
 	data = dataReader(data)
-	if true { //dateFormat(mode) != gjson.Get(data, "date."+mode).String() {
+	if dateFormat(mode) != gjson.Get(data, "date."+mode).String() {
 		data = scrapy(data, mode, dir, date)
 		data, _ = sjson.Set(data, "date."+mode, dateFormat(mode))
 		dataWriter(data)
