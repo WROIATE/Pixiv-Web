@@ -10,7 +10,7 @@
     <title>Pixiv Collections</title>
 </head>
 
-<body>
+<body class="scrollbar">
     <!--web head with background-->
     <header style="position:relative">
         <div class="jumbotron jumbotron-fluid bg-brightness header-bg mb-0">
@@ -21,11 +21,10 @@
         </div>
     </header>
     <!--sticky nav-->
-    <div class="sticky-top p-0 d-flex align-items-center mb-5"
-        style="width:100%;background-color: #050606;min-height:70px;">
+    <div class="sticky-top p-0 d-flex align-items-center sticky-nav mb-5">
         <div class="container">
             {{$s := .Site}}
-            <nav class="nav nav-pills  flex-sm-row justify-content-center" style="max-width:700px;margin: 0 auto;">
+            <nav class="nav nav-pills flex-sm-row justify-content-center m-auto" style="max-width:700px">
                 <a class="flex-sm-fill text-sm-center nav-link {{if $s.Daily}}active{{end}}" href="daily">日榜</a>
                 <a class="flex-sm-fill text-sm-center nav-link {{if $s.Weekly}}active{{end}}" href="/weekly">周榜</a>
                 <a class="flex-sm-fill text-sm-center nav-link {{if $s.Monthly}}active{{end}}" href="/monthly">月榜</a>
@@ -39,9 +38,9 @@
                 {{range $picture := .Pictures}}
                 <a class="card border-0 mb-3 shadow">
                     <div class="sliderpic">
-                        <img class="card-img-top rounded-sm" loading="lazy" draggable="false" data-toggle="modal"
+                        <img class="card-img rounded-sm" loading="lazy" draggable="false" data-toggle="modal"
                             data-target="#P{{$picture.Id}}" src={{$picture.Path}} alt="">
-                        <div class="pic-info" style="background-color:rgba(0,0,0,0);">
+                        <div class="pic-info m-2" >
                             <div class="post-title">{{$picture.Title}}</div>
                             id={{$picture.Id}}
                         </div>
@@ -53,7 +52,7 @@
         <!-- Modal -->
         <div>
             {{range $picture := .Pictures}}
-            <div class="modal fade"  id="P{{$picture.Id}}" tabindex="-1">
+            <div class="modal fade p-0" id="P{{$picture.Id}}" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -67,8 +66,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <a href="https://www.pixiv.net/artworks/{{$picture.Id}}"
-                                class="btn btn-primary">P站传送门</a>
+                            <a href="https://www.pixiv.net/artworks/{{$picture.Id}}" class="btn btn-primary">P站传送门</a>
                         </div>
                     </div>
                 </div>
@@ -95,7 +93,18 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
     <script>$(function () { $('[data-toggle="tooltip"]').tooltip() })</script>
-    <script>$('#myModal').on('shown.bs.modal', function () { $('#myInput').trigger('focus') })</script>
+    <script>$('#myModal').on('shown.bs.modal', function () { $('#myInput').trigger('focus') })
+        {
+            let h
+            $('body').on('show.bs.modal', ".modal", () => {
+                h = $(window).scrollTop();
+                $("body").css({
+                    "top": -h
+                });
+            }).on("hidden.bs.modal", ".modal", () => {
+                $(window).scrollTop(h);
+            });
+        }</script>
 </body>
 
 </html>
