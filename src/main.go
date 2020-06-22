@@ -68,7 +68,7 @@ func restore() {
 
 func main() {
 	r := gin.Default()
-	c := cron.New(cron.WithSeconds())
+	c := cron.New()
 	restore()
 	r.Static("/static", "../static")
 	r.LoadHTMLGlob("../static/index.html")
