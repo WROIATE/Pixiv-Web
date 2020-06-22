@@ -4,6 +4,8 @@ import (
 	"Pixiv/src/pixiv"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/fvbock/endless"
 	"github.com/gin-gonic/gin"
@@ -32,10 +34,27 @@ func New() *ginServer {
 	return &ginServer{}
 }
 
+func exportStatic() {
+	dirs := []string{"static"} // 设置需要释放的目录
+	isSuccess := true
+	for _, dir := range dirs {
+		if err := RestoreAssets("../../", dir); err != nil {
+			isSuccess = false
+			break
+		}
+	}
+	if !isSuccess {
+		for _, dir := range dirs {
+			os.RemoveAll(filepath.Join("../../", dir))
+		}
+	}
+}
+
 func (s *ginServer) InitServer() {
 	daily := pixiv.New("daily")
 	weekly := pixiv.New("weekly")
 	monthly := pixiv.New("monthly")
+	exportStatic()
 	firstLoad(daily, weekly, monthly)
 	s.c = cron.New()
 	s.c.AddFunc("@daily", func() {
