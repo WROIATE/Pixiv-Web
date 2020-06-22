@@ -23,7 +23,7 @@ type transform struct {
 }
 
 func New(mode string) *Pixiv {
-	dir := "../../static/picture/"
+	dir := "../static/picture/"
 	os.Mkdir(dir, os.ModePerm)
 	return &Pixiv{mode, DateFormat(mode), dir, "", 0}
 }

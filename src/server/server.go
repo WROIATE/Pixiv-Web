@@ -38,14 +38,14 @@ func exportStatic() {
 	dirs := []string{"static"} // 设置需要释放的目录
 	isSuccess := true
 	for _, dir := range dirs {
-		if err := RestoreAssets("../../", dir); err != nil {
+		if err := RestoreAssets("../", dir); err != nil {
 			isSuccess = false
 			break
 		}
 	}
 	if !isSuccess {
 		for _, dir := range dirs {
-			os.RemoveAll(filepath.Join("../../", dir))
+			os.RemoveAll(filepath.Join("../", dir))
 		}
 	}
 }
@@ -73,8 +73,8 @@ func (s *ginServer) InitServer() {
 		fmt.Println("monthly Next Download: " + s.c.Entries()[2].Next.String())
 	})
 	s.g = gin.Default()
-	s.g.Static("/static", "../../static")
-	s.g.LoadHTMLGlob("../../static/index.html")
+	s.g.Static("/static", "../static")
+	s.g.LoadHTMLGlob("../static/index.html")
 	s.g.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"Pictures": pixiv.LoadPictures(*daily),
