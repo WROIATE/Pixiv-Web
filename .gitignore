@@ -5,7 +5,10 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
+# Picture
+picture/
 
 # Thumbnails
 ._*
