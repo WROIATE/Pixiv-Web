@@ -8,7 +8,11 @@
 Icon
 
 # Picture
-picture/
+PixivDownload/
+
+#Static
+src/app/view/
+pixiv
 
 # Thumbnails
 ._*

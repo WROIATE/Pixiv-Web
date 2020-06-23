@@ -1,0 +1,228 @@
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeout {
+    0% {
+        opacity: 1;
+        left: 15px;
+        bottom: 10px;
+    }
+    100% {
+        opacity: 0;
+        left: 0;
+        bottom: 0;
+    }
+}
+
+body {
+    background-color: #191a1a;
+    animation-name: fadein;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+}
+
+.modal {
+    padding: 1%;
+}
+
+.modal-xl {
+    min-width: auto;
+    max-width: fit-content;
+    min-height: auto;
+    height: fit-content;
+    margin: 0 auto;
+}
+
+.modal-body {
+    overflow-y: auto;
+}
+
+.modal-open {
+    overflow: hidden;
+    overflow-y: scroll;
+    padding-right: 0 !important;
+    position: fixed;
+    right: 0;
+    left: 0;
+}
+
+.pic {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-width: 100%;
+    max-height: 80vh;
+}
+
+.bg-brightness {
+    filter: brightness(0.7);
+}
+
+.header-bg {
+    background: url('/static/img/80518034_p0.png');
+    height: 30vh;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.content-front {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 35%;
+}
+
+.head-nav {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    height: 100%;
+    display: box;
+    display: flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    position: relative;
+}
+
+@media only screen {
+    .card:hover .sliderpic:hover .pic-info {
+        transform: translateX(-10px);
+        opacity: 0;
+        transition: transform .4s, opacity .4s;
+    }
+}
+
+.card .sliderpic img {
+    transition: filter .4s;
+    filter: brightness(0.6);
+}
+
+.card:hover .sliderpic img {
+    transition: filter .4s;
+    filter: brightness(1);
+}
+
+.pic-info {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.card .sliderpic .pic-info {
+    position: absolute;
+    bottom: 10px;
+    font-size: 17px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 1;
+    transition: transform .4s, opacity .4s;
+}
+
+.post-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    width: 100%
+}
+
+.modal-header {
+    border-bottom-color: rgb(55, 59, 64);
+    color: rgb(217, 215, 213);
+}
+
+.modal-content {
+    background-color: rgb(25, 26, 26);
+    border-top-color: rgba(102, 102, 102, 0.2);
+    border-right-color: rgba(102, 102, 102, 0.2);
+    border-bottom-color: rgba(102, 102, 102, 0.2);
+    border-left-color: rgba(102, 102, 102, 0.2);
+    outline-color: initial;
+    color: rgb(217, 215, 213);
+    font-weight: bold;
+}
+
+.modal-footer {
+    border-top-color: rgb(55, 59, 64);
+    color: rgb(217, 215, 213);
+}
+
+.btn-primary {
+    color: rgb(255, 255, 255);
+    background-color: rgb(42, 91, 144);
+    border-top-color: rgb(42, 91, 144);
+    border-right-color: rgb(42, 91, 144);
+    border-bottom-color: rgb(42, 91, 144);
+    border-left-color: rgb(42, 91, 144);
+}
+
+.btn-secondary {
+    color: rgb(255, 255, 255);
+    background-color: rgb(65, 67, 68);
+    border-top-color: rgb(78, 81, 83);
+    border-right-color: rgb(78, 81, 83);
+    border-bottom-color: rgb(78, 81, 83);
+    border-left-color: rgb(78, 81, 83);
+}
+
+.scrollbar::-webkit-scrollbar {
+    width: 8px;
+    background-color: #191a1a;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: #555;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    background-color: #191a1a;
+}
+
+.page-link {
+    color: rgb(98, 154, 200);
+    background-color: rgb(25, 26, 26);
+    border-top-color: rgb(55, 59, 64);
+    border-right-color: rgb(55, 59, 64);
+    border-bottom-color: rgb(55, 59, 64);
+    border-left-color: rgb(55, 59, 64);
+}
+
+.sticky-nav {
+    width: 100%;
+    background-color: #050606;
+    color: rgb(217, 215, 213);
+    min-height: 70px;
+}
+
+@media (min-width: 576px) {
+    .card-columns {
+        column-count: 1;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-columns {
+        column-count: 2;
+    }
+}
+
+@media (min-width: 992px) {
+    .card-columns {
+        column-count: 3;
+    }
+}

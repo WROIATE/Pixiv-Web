@@ -2,6 +2,7 @@ package server
 
 import (
 	"Pixiv/src/pixiv"
+	"Pixiv/src/static"
 	"fmt"
 	"net/http"
 	"os"
@@ -35,17 +36,17 @@ func New() *ginServer {
 }
 
 func exportStatic() {
-	dirs := []string{"static"} // 设置需要释放的目录
+	dirs := []string{"view"} // 设置需要释放的目录
 	isSuccess := true
 	for _, dir := range dirs {
-		if err := RestoreAssets("../", dir); err != nil {
+		if err := static.RestoreAssets("./", dir); err != nil {
 			isSuccess = false
 			break
 		}
 	}
 	if !isSuccess {
 		for _, dir := range dirs {
-			os.RemoveAll(filepath.Join("../", dir))
+			os.RemoveAll(filepath.Join("./", dir))
 		}
 	}
 }
@@ -59,22 +60,16 @@ func (s *ginServer) InitServer() {
 	s.c = cron.New()
 	s.c.AddFunc("@daily", func() {
 		daily.Crawl()
-		fmt.Println("daily Pre Download: " + s.c.Entries()[0].Prev.String())
-		fmt.Println("daily Next Download: " + s.c.Entries()[0].Next.String())
-	})
-	s.c.AddFunc("@weekly", func() {
 		weekly.Crawl()
-		fmt.Println("weekly Pre Download: " + s.c.Entries()[1].Prev.String())
-		fmt.Println("weekly Next Download: " + s.c.Entries()[1].Next.String())
-	})
-	s.c.AddFunc("@monthly", func() {
 		monthly.Crawl()
-		fmt.Println("monthly Pre Download: " + s.c.Entries()[2].Prev.String())
-		fmt.Println("monthly Next Download: " + s.c.Entries()[2].Next.String())
+		fmt.Println("Daily Pre Download: " + s.c.Entries()[0].Prev.String())
+		fmt.Println("Daily Next Download: " + s.c.Entries()[0].Next.String())
 	})
+
 	s.g = gin.Default()
-	s.g.Static("/static", "../static")
-	s.g.LoadHTMLGlob("../static/index.html")
+	s.g.Static("/static", "./view/static")
+	s.g.Static("/Pixiv", "./PixivDownload")
+	s.g.LoadHTMLGlob("./view/html/index.html")
 	s.g.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"Pictures": pixiv.LoadPictures(*daily),
