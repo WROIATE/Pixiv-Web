@@ -4,11 +4,13 @@ import (
 	"Pixiv/src/pixiv"
 	"Pixiv/src/static"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/fvbock/endless"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
 )
@@ -24,10 +26,14 @@ type Site struct {
 	Monthly string
 }
 
-func firstLoad(d, w, m *pixiv.Pixiv) {
+func LoadStatic(d, w, m *pixiv.Pixiv) {
 	d.Crawl()
 	w.Crawl()
 	m.Crawl()
+	pixiv.DeleteTmp()
+	pixiv.DecodeTar(*d)
+	pixiv.DecodeTar(*w)
+	pixiv.DecodeTar(*m)
 
 }
 
@@ -56,25 +62,24 @@ func (s *ginServer) InitServer() {
 	weekly := pixiv.New("weekly")
 	monthly := pixiv.New("monthly")
 	exportStatic()
-	firstLoad(daily, weekly, monthly)
+	LoadStatic(daily, weekly, monthly)
 	s.c = cron.New()
+
 	s.c.AddFunc("@daily", func() {
-		daily.Crawl()
-		weekly.Crawl()
-		monthly.Crawl()
+		LoadStatic(daily, weekly, monthly)
 		fmt.Println("Daily Pre Download: " + s.c.Entries()[0].Prev.String())
 		fmt.Println("Daily Next Download: " + s.c.Entries()[0].Next.String())
 	})
 
 	s.g = gin.Default()
+	//gin.SetMode(gin.ReleaseMode)
+	s.g.Use(gzip.Gzip(gzip.DefaultCompression))
 	s.g.Static("/static", "./view/static")
 	s.g.Static("/Pixiv", "./PixivDownload")
 	s.g.LoadHTMLGlob("./view/html/index.html")
 	s.g.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"Pictures": pixiv.LoadPictures(*daily),
-			"Site":     &Site{Daily: "true"},
-		})
+		c.Request.URL.Path = "/daily"
+		s.g.HandleContext(c)
 	})
 
 	s.g.GET("/daily", func(c *gin.Context) {
@@ -96,6 +101,25 @@ func (s *ginServer) InitServer() {
 			"Pictures": pixiv.LoadPictures(*weekly),
 			"Site":     Site{Weekly: "true"},
 		})
+	})
+
+	s.g.GET("/download/:mode", func(c *gin.Context) {
+		mode := c.Param("mode")
+		log.Println(c.Request.Header)
+		var p pixiv.Pixiv
+		if mode == "daily" {
+			p = *daily
+		} else if mode == "weekly" {
+			p = *weekly
+		} else if mode == "monthly" {
+			p = *monthly
+		} else {
+			log.Println(c.Request.Header)
+			return
+		}
+		c.Writer.WriteHeader(http.StatusOK)
+		c.Header("Content-Disposition", "attachment; filename="+p.Mode+p.Date+".tar")
+		c.File("./tmp/" + p.Mode + p.Date + ".tar")
 	})
 }
 

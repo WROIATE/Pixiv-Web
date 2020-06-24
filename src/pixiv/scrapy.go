@@ -23,7 +23,8 @@ func (p *Pixiv) scrapy() {
 
 func (p *Pixiv) Crawl() {
 	p.DataSwap = dataReader(p.DownloadDir)
-	if p.Date != gjson.Get(p.DataSwap, "date."+p.Date).String() {
+	p.Date = DateFormat(p.Mode)
+	if p.Date != gjson.Get(p.DataSwap, "date."+p.Mode).String() {
 		p.scrapy()
 		p.DataSwap, _ = sjson.Set(p.DataSwap, "date."+p.Mode, p.Date)
 		dataWriter(p.DataSwap, p.DownloadDir)

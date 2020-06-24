@@ -209,9 +209,21 @@ body {
     min-height: 70px;
 }
 
+#download{
+    position: absolute;
+    right: 7%;
+}
+
 @media (min-width: 576px) {
     .card-columns {
         column-count: 1;
+    }
+    #download{
+        position: absolute;
+        right: 5%;
+    }
+    .tag{
+        width: 400px;
     }
 }
 
@@ -219,10 +231,38 @@ body {
     .card-columns {
         column-count: 2;
     }
+    #download{
+        position: absolute;
+        right: 4%;
+    }
+    .tag{
+        width: 600px;
+    }
 }
 
 @media (min-width: 992px) {
     .card-columns {
         column-count: 3;
     }
+    #download{
+        position: absolute;
+        right: 3%;
+    }
+    .tag{
+        width: 700px;
+    }
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: rgb(255, 255, 255);
+    background-color: rgb(42, 91, 144);
+}
+a {
+    color: rgb(98, 154, 200);
+    text-decoration-color: initial;
+    background-color: transparent;
+}
+
+a:hover {
+    color: rgb(133, 176, 212);
 }

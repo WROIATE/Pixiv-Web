@@ -56,9 +56,10 @@ func setJson(s string, pic picture) string {
 
 func NewPicture(title, id string) Picture {
 	return Picture{
-		Id:    strings.Split(id, ".")[0],
-		Path:  fmt.Sprintf("/Pixiv/%s", id),
-		Title: title,
+		Id:     strings.Split(id, ".")[0],
+		Path:   fmt.Sprintf("/Pixiv/%s", id),
+		Title:  title,
+		Origin: id,
 	}
 }
 

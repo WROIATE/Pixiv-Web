@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/open-iconic/font/css/open-iconic-bootstrap.css">
     <title>Pixiv Collections</title>
 </head>
 
@@ -16,19 +17,22 @@
         </div>
         <div class="content-front">
             <h1 class="display-4 text-white text-center">Pixiv Collections</h1>
-            <p class="lead text-white text-center">P站好图收藏</p>
+            <p class="lead text-white font-weight-normal text-center">P站好图收藏</p>
         </div>
     </header>
     <!--sticky nav-->
-    <div class="sticky-top p-0 d-flex align-items-center sticky-nav mb-5">
-        <div class="container">
+    <div class="sticky-top p-0 d-flex align-items-center justify-content-center sticky-nav mb-5">
+        <div class="tag">
             {{$s := .Site}}
-            <nav class="nav nav-pills flex-sm-row justify-content-center m-auto" style="max-width:700px">
-                <a class="flex-sm-fill text-sm-center nav-link {{if $s.Daily}}active{{end}}" href="daily">日榜</a>
+            <nav class="nav nav-pills flex-sm-row justify-content-center m-auto">
+                <a class="flex-sm-fill text-sm-center nav-link {{if $s.Daily}}active{{end}}" href="/daily">日榜</a>
                 <a class="flex-sm-fill text-sm-center nav-link {{if $s.Weekly}}active{{end}}" href="/weekly">周榜</a>
                 <a class="flex-sm-fill text-sm-center nav-link {{if $s.Monthly}}active{{end}}" href="/monthly">月榜</a>
             </nav>
         </div>
+        <a id="download" class="text-white" href="/download/{{if $s.Daily}}daily{{else if $s.Weekly}}weekly{{else if $s.Monthly}}monthly{{end}}">
+            <span class="oi oi-data-transfer-download"></span>
+        </a>
     </div>
     <main>
         <!--image thumbnail-->
@@ -37,7 +41,7 @@
                 {{range $picture := .Pictures}}
                 <a class="card border-0 mb-3 shadow">
                     <div class="sliderpic">
-                        <img class="card-img rounded-sm" loading="lazy" draggable="false" data-toggle="modal"
+                        <img class="card-img rounded-sm" draggable="false" data-toggle="modal"
                             data-target="#P{{$picture.Id}}" src={{$picture.Path}} alt="">
                         <div class="pic-info m-2">
                             <div class="post-title">{{$picture.Title}}</div>

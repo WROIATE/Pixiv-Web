@@ -12,6 +12,7 @@ PixivDownload/
 
 #Static
 src/app/view/
+tmp/
 pixiv
 
 # Thumbnails

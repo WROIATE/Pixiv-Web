@@ -25,11 +25,12 @@ type transform struct {
 func New(mode string) *Pixiv {
 	dir := "./PixivDownload/"
 	os.Mkdir(dir, os.ModePerm)
-	return &Pixiv{mode, DateFormat(mode), dir, "", 0}
+	return &Pixiv{mode, "", dir, "", 0}
 }
 
 type Picture struct {
-	Id    string
-	Path  string
-	Title string
+	Id     string
+	Path   string
+	Title  string
+	Origin string
 }
