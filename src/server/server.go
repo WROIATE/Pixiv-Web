@@ -3,7 +3,6 @@ package server
 import (
 	"Pixiv/src/pixiv"
 	"Pixiv/src/static"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -67,12 +66,11 @@ func (s *ginServer) InitServer() {
 
 	s.c.AddFunc("@daily", func() {
 		LoadStatic(daily, weekly, monthly)
-		fmt.Println("Daily Pre Download: " + s.c.Entries()[0].Prev.String())
-		fmt.Println("Daily Next Download: " + s.c.Entries()[0].Next.String())
+		log.Println("Daily Pre Download: " + s.c.Entries()[0].Prev.String())
+		log.Println("Daily Next Download: " + s.c.Entries()[0].Next.String())
 	})
-
+	gin.SetMode(gin.ReleaseMode)
 	s.g = gin.Default()
-	//gin.SetMode(gin.ReleaseMode)
 	s.g.Use(gzip.Gzip(gzip.DefaultCompression))
 	s.g.Static("/static", "./view/static")
 	s.g.Static("/Pixiv", "./PixivDownload")
@@ -105,7 +103,6 @@ func (s *ginServer) InitServer() {
 
 	s.g.GET("/download/:mode", func(c *gin.Context) {
 		mode := c.Param("mode")
-		log.Println(c.Request.Header)
 		var p pixiv.Pixiv
 		if mode == "daily" {
 			p = *daily

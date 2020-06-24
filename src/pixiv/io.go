@@ -16,7 +16,7 @@ func dataReader(path string) string {
 	file, err := os.OpenFile(path+"Pixiv.json", os.O_RDWR|os.O_CREATE, 0755)
 	defer file.Close()
 	if err != nil {
-		fmt.Println("加载json错误")
+		log.Println("Load json err")
 		return err.Error()
 	}
 	b, _ := ioutil.ReadAll(file)
@@ -33,7 +33,7 @@ func dataReader(path string) string {
 func dataWriter(s, path string) {
 	err := ioutil.WriteFile(path+"Pixiv.json", []byte(s), 0664)
 	if err != nil {
-		fmt.Println("json文件写入错误")
+		log.Println("Write json err")
 	}
 }
 
@@ -49,7 +49,7 @@ func DecodeTar(p Pixiv) {
 	var files = LoadPictures(p)
 	buf, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	defer buf.Close()
 	tw := tar.NewWriter(buf)
@@ -57,7 +57,7 @@ func DecodeTar(p Pixiv) {
 	for _, file := range files {
 		body, err := read(p.DownloadDir + file.Origin)
 		if err != nil {
-			fmt.Println("read err", err)
+			log.Println("read err", err)
 		}
 		hdr := &tar.Header{
 			Name: file.Origin,
