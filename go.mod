@@ -11,6 +11,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
+	github.com/gorilla/websocket v1.4.2
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/kennygrant/sanitize v1.2.4
 	github.com/robfig/cron v1.2.0 // indirect
