@@ -15,8 +15,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func (p *Pixiv) scrapy() {
-	c := p.newScrapy()
+func (p *Pixiv) scrapy(mode string) {
+	c := p.newScrapy(mode)
 	c.Visit(fmt.Sprintf("https://www.pixiv.net/ranking.php?mode=%s&content=illust&format=json", p.Mode))
 	//c.Visit("https://i.pximg.net/img-original/img/2020/03/13/07/36/14/80074611_p0.jpg")
 	c.Wait()
@@ -25,26 +25,39 @@ func (p *Pixiv) scrapy() {
 func (p *Pixiv) Crawl() {
 	p.DataSwap = dataReader(p.DownloadDir)
 	p.Date = DateFormat(p.Mode)
+	p.scrapy("")
+	p.DataSwap, _ = sjson.Set(p.DataSwap, "date."+p.Mode, p.Date)
+	dataWriter(p.DataSwap, p.DownloadDir)
+	if p.Status != 0 {
+		log.Println(p.Mode + p.Date + " Have some download failed")
+		p.Status = 0
+	}
+	p.DataSwap = ""
+}
+
+func (p *Pixiv) GetImageWithStrict() {
+	p.DataSwap = dataReader(p.DownloadDir)
+	p.Date = DateFormat(p.Mode)
 	if p.Date != gjson.Get(p.DataSwap, "date."+p.Mode).String() {
-		p.scrapy()
+		p.scrapy("strict")
 		p.DataSwap, _ = sjson.Set(p.DataSwap, "date."+p.Mode, p.Date)
 		dataWriter(p.DataSwap, p.DownloadDir)
 		if p.Status != 0 {
-			log.Println(p.Mode + p.Date + " Have some download failed")
+			log.Println(p.Mode + p.Date + fmt.Sprintf(" Have some download failed:%d", p.Status))
 			p.Status = 0
 		}
 	} else {
 		log.Println("Mode:" + p.Mode + " Already crawled today")
 	}
 	p.DataSwap = ""
-	//fmt.Println(getJson(mode, date))
 }
 
-func (p *Pixiv) newScrapy() *colly.Collector {
+func (p *Pixiv) newScrapy(mode string) *colly.Collector {
 	c := colly.NewCollector(
 		colly.MaxBodySize(1024*1024*1024),
 		colly.Async(true),
 		colly.AllowURLRevisit(),
+		colly.UserAgent(`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36`),
 	)
 	var mutex sync.Mutex
 	c.SetRequestTimeout(600 * time.Second)
@@ -63,6 +76,12 @@ func (p *Pixiv) newScrapy() *colly.Collector {
 					}
 				} else {
 					c.Visit("https://www.pixiv.net/ajax/illust/" + id)
+					p.Status++
+				}
+			}
+			if mode != "strict" {
+				if p.Status == 0 {
+					p.Msg <- 0
 				}
 			}
 		} else if strings.Contains(r.Request.URL.String(), "ajax") {
@@ -73,7 +92,6 @@ func (p *Pixiv) newScrapy() *colly.Collector {
 			r.Ctx.Put("id", id)
 			r.Ctx.Put("name", name)
 			c.Request("GET", url, nil, r.Ctx, nil)
-			p.Status++
 		} else {
 			ext := filepath.Ext(r.Request.URL.String())
 			cleanExt := sanitize.BaseName(ext)
@@ -85,6 +103,9 @@ func (p *Pixiv) newScrapy() *colly.Collector {
 				mutex.Lock()
 				p.DataSwap = setJson(p.DataSwap, picture{r.Ctx.Get("id"), p.Mode + p.Date, r.Ctx.Get("name"), fmt.Sprintf("%s.%s", r.Ctx.Get("id"), cleanExt[1:])})
 				p.Status--
+				if mode != "strict" {
+					p.Msg <- p.Status
+				}
 				log.Println(r.Ctx.Get("id") + fmt.Sprintf(" Download finished, Remaining num:%d", p.Status))
 				mutex.Unlock()
 			}

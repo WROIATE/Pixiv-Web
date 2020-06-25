@@ -8,6 +8,7 @@ type Pixiv struct {
 	DownloadDir string
 	DataSwap    string
 	Status      int
+	Msg         chan int
 }
 
 type picture struct {
@@ -25,7 +26,7 @@ type transform struct {
 func New(mode string) *Pixiv {
 	dir := "./PixivDownload/"
 	os.Mkdir(dir, os.ModePerm)
-	return &Pixiv{mode, "", dir, "", 0}
+	return &Pixiv{mode, "", dir, "", 0, make(chan int)}
 }
 
 type Picture struct {
