@@ -11,6 +11,7 @@ import (
 	"github.com/fvbock/endless"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/robfig/cron/v3"
 )
 
@@ -25,20 +26,20 @@ type Site struct {
 	Monthly string
 }
 
-func LoadStatic(d, w, m *pixiv.Pixiv) {
-	d.Crawl()
-	w.Crawl()
-	m.Crawl()
-	pixiv.DeleteTmp()
-	pixiv.DecodeTar(*d)
-	pixiv.DecodeTar(*w)
-	pixiv.DecodeTar(*m)
-
+func LoadStatic() {
+	daily.GetImageWithStrict()
+	weekly.GetImageWithStrict()
+	monthly.GetImageWithStrict()
+	daily.DecodeTar()
+	weekly.DecodeTar()
+	monthly.DecodeTar()
 }
 
 func New() *ginServer {
 	return &ginServer{}
 }
+
+var daily, weekly, monthly *pixiv.Pixiv
 
 func exportStatic() {
 	dirs := []string{"view"} // 设置需要释放的目录
@@ -57,19 +58,19 @@ func exportStatic() {
 }
 
 func (s *ginServer) InitServer() {
-	daily := pixiv.New("daily")
-	weekly := pixiv.New("weekly")
-	monthly := pixiv.New("monthly")
+	daily = pixiv.New("daily")
+	weekly = pixiv.New("weekly")
+	monthly = pixiv.New("monthly")
 	exportStatic()
-	LoadStatic(daily, weekly, monthly)
+	LoadStatic()
 	s.c = cron.New()
 
 	s.c.AddFunc("@daily", func() {
-		LoadStatic(daily, weekly, monthly)
+		LoadStatic()
 		log.Println("Daily Pre Download: " + s.c.Entries()[0].Prev.String())
 		log.Println("Daily Next Download: " + s.c.Entries()[0].Next.String())
 	})
-	gin.SetMode(gin.ReleaseMode)
+	//gin.SetMode(gin.ReleaseMode)
 	s.g = gin.Default()
 	s.g.Use(gzip.Gzip(gzip.DefaultCompression))
 	s.g.Static("/static", "./view/static")
@@ -101,23 +102,71 @@ func (s *ginServer) InitServer() {
 		})
 	})
 
+	s.g.GET("/reload/:mode", reload)
+
 	s.g.GET("/download/:mode", func(c *gin.Context) {
 		mode := c.Param("mode")
 		var p pixiv.Pixiv
-		if mode == "daily" {
+		switch mode {
+		case "daily":
 			p = *daily
-		} else if mode == "weekly" {
+		case "weekly":
 			p = *weekly
-		} else if mode == "monthly" {
+		case "monthly":
 			p = *monthly
-		} else {
+		default:
 			log.Println(c.Request.Header)
-			return
+			c.JSON(403, gin.H{"error": "forbidden"})
 		}
 		c.Writer.WriteHeader(http.StatusOK)
 		c.Header("Content-Disposition", "attachment; filename="+p.Mode+p.Date+".tar")
 		c.File("./tmp/" + p.Mode + p.Date + ".tar")
 	})
+}
+
+var upGrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+func reload(c *gin.Context) {
+	mode := c.Param("mode")
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		return
+	}
+	defer ws.Close()
+	var p *pixiv.Pixiv
+	switch mode {
+	case "daily":
+		p = daily
+	case "weekly":
+		p = weekly
+	case "monthly":
+		p = monthly
+	default:
+		log.Println(c.Request.Header)
+		return
+	}
+	go p.Crawl()
+	num := <-p.Msg
+	total := num
+	for num > 0 {
+		err = ws.WriteJSON(gin.H{
+			"num":   num,
+			"total": total,
+		})
+		if err != nil {
+			break
+		}
+		num = <-p.Msg
+	}
+	p.DecodeTar()
+	err = ws.WriteJSON(gin.H{"num": 0, "total": total})
+	if err != nil {
+		return
+	}
 }
 
 func (s *ginServer) Start() {
