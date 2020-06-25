@@ -37,14 +37,17 @@ func dataWriter(s, path string) {
 	}
 }
 
-func DecodeTar(p Pixiv) {
+func (p Pixiv) DecodeTar() {
 	dirPath := "./tmp/"
 	filePath := dirPath + p.Mode + p.Date + ".tar"
 	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
 		os.Mkdir(dirPath, 0755)
-	} else if _, err := os.Stat(filePath); os.IsExist(err) {
-		return
+	} else if err := os.RemoveAll(filePath); err != nil {
+		log.Fatal("delete "+p.Mode+" err", err)
+	} else {
+		log.Println("remove old package " + p.Mode)
 	}
+
 	log.Println("Package picture " + p.Mode)
 	var files = LoadPictures(p)
 	buf, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0755)
