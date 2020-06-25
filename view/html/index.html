@@ -30,9 +30,16 @@
                 <a class="flex-sm-fill text-sm-center nav-link {{if $s.Monthly}}active{{end}}" href="/monthly">月榜</a>
             </nav>
         </div>
-        <a id="download" class="text-white" href="/download/{{if $s.Daily}}daily{{else if $s.Weekly}}weekly{{else if $s.Monthly}}monthly{{end}}">
-            <span class="oi oi-data-transfer-download"></span>
-        </a>
+        <div class="menu">
+            <a id="download" class="text-white mr-3"
+                href="/download/{{if $s.Daily}}daily{{else if $s.Weekly}}weekly{{else if $s.Monthly}}monthly{{end}}">
+                <span class="oi oi-data-transfer-download"></span>
+            </a>
+            <a id="reload" class="text-white" data-backdrop="static" data-toggle="modal"
+            data-target="#progress" href="javascript:void(0)">
+                <span class="oi oi-reload"></span>
+            </a>
+        </div>
     </div>
     <main>
         <!--image thumbnail-->
@@ -69,12 +76,24 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <a href="https://www.pixiv.net/artworks/{{$picture.Id}}" class="btn btn-primary">P站传送门</a>
+                            <a href="https://www.pixiv.net/artworks/{{$picture.Id}}" class="btn btn-primary" target="_blank">P站传送门</a>
                         </div>
                     </div>
                 </div>
             </div>
             {{end}}
+            <div class="modal fade p-0" id="progress" style="overflow-y: hidden;" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content" style="width:75wh;">
+                        <div class="modal-body">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                     style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     <footer>

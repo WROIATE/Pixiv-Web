@@ -209,7 +209,7 @@ body {
     min-height: 70px;
 }
 
-#download{
+.menu{
     position: absolute;
     right: 7%;
 }
@@ -218,7 +218,7 @@ body {
     .card-columns {
         column-count: 1;
     }
-    #download{
+    .menu{
         position: absolute;
         right: 5%;
     }
@@ -231,7 +231,7 @@ body {
     .card-columns {
         column-count: 2;
     }
-    #download{
+    .menu{
         position: absolute;
         right: 4%;
     }
@@ -244,7 +244,7 @@ body {
     .card-columns {
         column-count: 3;
     }
-    #download{
+    .menu{
         position: absolute;
         right: 3%;
     }
