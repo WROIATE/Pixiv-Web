@@ -149,6 +149,7 @@ func reload(c *gin.Context) {
 		log.Println(c.Request.Header)
 		return
 	}
+	log.Println("reload")
 	go p.Crawl()
 	num := <-p.Msg
 	total := num
