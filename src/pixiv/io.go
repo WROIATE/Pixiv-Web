@@ -3,11 +3,16 @@ package pixiv
 import (
 	"archive/tar"
 	"fmt"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
+	"github.com/nfnt/resize"
 	"github.com/tidwall/sjson"
 )
 
@@ -37,7 +42,7 @@ func dataWriter(s, path string) {
 	}
 }
 
-func (p Pixiv) DecodeTar() {
+func (p Pixiv) EncodeTar() {
 	dirPath := "./tmp/"
 	filePath := dirPath + p.Mode + p.Date + ".tar"
 	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
@@ -95,11 +100,54 @@ func read(src string) ([]byte, error) {
 	return filebody, nil
 }
 
+// DeleteTmp Clean the tmp folder tar cache
 func DeleteTmp() {
 	dirPath := "./tmp"
 	if err := os.RemoveAll(dirPath); err != nil {
 		log.Fatal("delete tmp err", err)
 	} else {
 		log.Println("Clean cache")
+	}
+}
+
+func CompressImg(dstpath, srcpath string, name string) {
+	log.Println("start compress " + name)
+	file, err := os.Open(srcpath + name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var img image.Image
+	if strings.HasSuffix(name, ".jpg") {
+		img, err = jpeg.Decode(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if strings.HasSuffix(name, ".png") {
+		img, err = png.Decode(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	file.Close()
+
+	m := resize.Resize(800, 0, img, resize.NearestNeighbor)
+	if _, err := os.Stat(dstpath); os.IsNotExist(err) {
+		os.Mkdir(dstpath, 0755)
+	}
+	out, err := os.OpenFile(dstpath+name, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer out.Close()
+
+	png.Encode(out, m)
+	log.Println("compress finshed")
+}
+
+func CompressAllImg(p Pixiv) {
+	files := LoadPictures(p)
+	for _, img := range files {
+		CompressImg("./thumbnail/", p.DownloadDir, img.Origin)
 	}
 }

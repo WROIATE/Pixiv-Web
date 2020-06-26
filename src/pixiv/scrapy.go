@@ -108,6 +108,7 @@ func (p *Pixiv) newScrapy(mode string) *colly.Collector {
 				}
 				log.Println(r.Ctx.Get("id") + fmt.Sprintf(" Download finished, Remaining num:%d", p.Status))
 				mutex.Unlock()
+				CompressImg("./thumbnail/", p.DownloadDir, fmt.Sprintf("%s.%s", r.Ctx.Get("id"), cleanExt[1:]))
 			}
 		}
 	})
