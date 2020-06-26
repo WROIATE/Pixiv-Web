@@ -30,6 +30,7 @@ func LoadStatic() {
 	daily.GetImageWithStrict()
 	weekly.GetImageWithStrict()
 	monthly.GetImageWithStrict()
+	pixiv.DeleteTmp()
 	daily.EncodeTar()
 	weekly.EncodeTar()
 	monthly.EncodeTar()
