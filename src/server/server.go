@@ -30,9 +30,9 @@ func LoadStatic() {
 	daily.GetImageWithStrict()
 	weekly.GetImageWithStrict()
 	monthly.GetImageWithStrict()
-	daily.DecodeTar()
-	weekly.DecodeTar()
-	monthly.DecodeTar()
+	daily.EncodeTar()
+	weekly.EncodeTar()
+	monthly.EncodeTar()
 }
 
 func New() *ginServer {
@@ -75,6 +75,7 @@ func (s *ginServer) InitServer() {
 	s.g.Use(gzip.Gzip(gzip.DefaultCompression))
 	s.g.Static("/static", "./view/static")
 	s.g.Static("/Pixiv", "./PixivDownload")
+	s.g.Static("/thumbnail", "./thumbnail")
 	s.g.LoadHTMLGlob("./view/html/index.html")
 	s.g.GET("/", func(c *gin.Context) {
 		c.Request.URL.Path = "/daily"
@@ -163,7 +164,7 @@ func reload(c *gin.Context) {
 		}
 		num = <-p.Msg
 	}
-	p.DecodeTar()
+	p.EncodeTar()
 	err = ws.WriteJSON(gin.H{"num": 0, "total": total})
 	if err != nil {
 		return

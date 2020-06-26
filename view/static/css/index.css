@@ -28,22 +28,6 @@ body {
     animation-iteration-count: 1;
 }
 
-.modal {
-    padding: 1%;
-}
-
-.modal-xl {
-    min-width: auto;
-    max-width: fit-content;
-    min-height: auto;
-    height: fit-content;
-    margin: 0 auto;
-}
-
-.modal-body {
-    overflow-y: auto;
-}
-
 .modal-open {
     overflow: hidden;
     overflow-y: scroll;
@@ -101,9 +85,12 @@ body {
         opacity: 0;
         transition: transform .4s, opacity .4s;
     }
+    .pic-info.active {
+        opacity: 0!important;
+    }
 }
 
-.card .sliderpic img {
+.card .sliderpic img:not(.active){
     transition: filter .4s;
     filter: brightness(0.6);
 }
@@ -113,11 +100,12 @@ body {
     filter: brightness(1);
 }
 
-.pic-info {
-    background-color: rgba(0, 0, 0, 0);
+img.active{
+    opacity: 0;
 }
 
-.card .sliderpic .pic-info {
+.pic-info {
+    background-color: rgba(0, 0, 0, 0);
     position: absolute;
     bottom: 10px;
     font-size: 17px;
@@ -125,8 +113,15 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     color: white;
     background-color: rgba(0, 0, 0, 0);
+}
+
+.card .sliderpic .pic-info:not(.active) {
     opacity: 1;
     transition: transform .4s, opacity .4s;
+}
+
+.card-background{
+    background-color: transparent;
 }
 
 .post-title {
@@ -209,7 +204,7 @@ body {
     min-height: 70px;
 }
 
-.menu{
+.menu {
     position: absolute;
     right: 7%;
 }
@@ -218,11 +213,11 @@ body {
     .card-columns {
         column-count: 1;
     }
-    .menu{
+    .menu {
         position: absolute;
         right: 5%;
     }
-    .tag{
+    .tag {
         width: 400px;
     }
 }
@@ -231,11 +226,11 @@ body {
     .card-columns {
         column-count: 2;
     }
-    .menu{
+    .menu {
         position: absolute;
         right: 4%;
     }
-    .tag{
+    .tag {
         width: 600px;
     }
 }
@@ -244,19 +239,20 @@ body {
     .card-columns {
         column-count: 3;
     }
-    .menu{
+    .menu {
         position: absolute;
         right: 3%;
     }
-    .tag{
+    .tag {
         width: 700px;
     }
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
     color: rgb(255, 255, 255);
     background-color: rgb(42, 91, 144);
 }
+
 a {
     color: rgb(98, 154, 200);
     text-decoration-color: initial;

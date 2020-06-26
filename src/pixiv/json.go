@@ -2,6 +2,7 @@ package pixiv
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/tidwall/gjson"
@@ -70,6 +71,9 @@ func LoadPictures(p Pixiv) []Picture {
 		check := strings.HasSuffix(f.Name, ".jpg") || strings.HasSuffix(f.Name, ".png")
 		if check {
 			list = append(list, NewPicture(f.Title, f.Name))
+		}
+		if _, err := os.Stat("./thumbnail/" + f.Name); os.IsNotExist(err) {
+			CompressImg("./thumbnail/", p.DownloadDir, f.Name)
 		}
 	}
 	return list
