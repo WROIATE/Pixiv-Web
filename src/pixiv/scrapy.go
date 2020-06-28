@@ -22,6 +22,7 @@ func (p *Pixiv) scrapy(mode string) {
 	c.Wait()
 }
 
+//Crawl image directly
 func (p *Pixiv) Crawl() {
 	p.DataSwap = dataReader(p.DownloadDir)
 	p.Date = DateFormat(p.Mode)
@@ -35,6 +36,7 @@ func (p *Pixiv) Crawl() {
 	p.DataSwap = ""
 }
 
+//GetImageWithStrict use strict mode crawl
 func (p *Pixiv) GetImageWithStrict() {
 	p.DataSwap = dataReader(p.DownloadDir)
 	p.Date = DateFormat(p.Mode)
@@ -105,10 +107,10 @@ func (p *Pixiv) newScrapy(mode string) *colly.Collector {
 				p.Status--
 				if mode != "strict" {
 					p.Msg <- p.Status
+					CompressImg("./thumbnail/", p.DownloadDir, fmt.Sprintf("%s.%s", r.Ctx.Get("id"), cleanExt[1:]))
 				}
 				log.Println(r.Ctx.Get("id") + fmt.Sprintf(" Download finished, Remaining num:%d", p.Status))
 				mutex.Unlock()
-				CompressImg("./thumbnail/", p.DownloadDir, fmt.Sprintf("%s.%s", r.Ctx.Get("id"), cleanExt[1:]))
 			}
 		}
 	})

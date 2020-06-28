@@ -1,8 +1,11 @@
 package pixiv
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestScrapy(t *testing.T) {
-	p := New("daily")
-	p.Crawl()
+	p := New("weekly")
+	fmt.Println(LoadPictures(*p))
 }

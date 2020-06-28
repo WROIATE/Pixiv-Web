@@ -7,17 +7,31 @@
     }
 }
 
-@keyframes fadeout {
+@keyframes navfadeOut {
     0% {
         opacity: 1;
-        left: 15px;
-        bottom: 10px;
     }
     100% {
         opacity: 0;
-        left: 0;
-        bottom: 0;
+        top: -70px;
     }
+}
+
+@keyframes navfadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.navfadeOut {
+    animation: navfadeOut 0.3s linear forwards !important;
+}
+
+.navfadeIn {
+    animation: navfadeIn 0.2s linear forwards !important;
 }
 
 body {
@@ -80,7 +94,7 @@ body {
 }
 
 @media only screen {
-    .card:hover .sliderpic:hover .pic-info {
+    .card:hover .pic-info {
         transform: translateX(-10px);
         opacity: 0;
         transition: transform .4s, opacity .4s;
@@ -90,7 +104,11 @@ body {
     }
 }
 
-.card .sliderpic img:not(.active){
+.sliderinfo {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.card .sliderpic img:not(.active) {
     transition: filter .4s;
     filter: brightness(0.6);
 }
@@ -100,27 +118,35 @@ body {
     filter: brightness(1);
 }
 
-img.active{
+.favour {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+}
+
+.like {
+    color: rgb(240, 80, 101)!important;
+}
+
+img.active {
     opacity: 0;
 }
 
 .pic-info {
-    background-color: rgba(0, 0, 0, 0);
     position: absolute;
     bottom: 10px;
     font-size: 17px;
     font-weight: bold;
     font-family: Arial, Helvetica, sans-serif;
     color: white;
-    background-color: rgba(0, 0, 0, 0);
 }
 
-.card .sliderpic .pic-info:not(.active) {
+.pic-info:not(.active) {
     opacity: 1;
     transition: transform .4s, opacity .4s;
 }
 
-.card-background{
+.card-background {
     background-color: transparent;
 }
 

@@ -2,7 +2,6 @@ package pixiv
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/tidwall/gjson"
@@ -35,13 +34,14 @@ func getJson(p Pixiv) []transform {
 	gjson.Parse(gjson.Get(s, "picture").String()).ForEach(
 		func(key, value gjson.Result) bool {
 			if strings.HasPrefix(key.String(), "id=") {
-				//println(key.String())
-				if strings.Contains(value.String(), p.Mode+p.Date) {
+				if strings.Contains(gjson.Get(value.String(), "date").String(), p.Mode+p.Date) {
 					filename := gjson.Get(value.String(), "filename").String()
 					title := gjson.Get(value.String(), "title").String()
-					list = append(list, transform{Title: title, Name: filename})
+					favour := gjson.Get(value.String(), "favour").String()
+					list = append(list, transform{Title: title, Name: filename, Favour: favour})
+					// println(key.String())
+					// println(strings.Split(value.String(), ",")[1])
 				}
-				//println(value.String())
 			}
 			return true
 		})
@@ -52,29 +52,63 @@ func setJson(s string, pic picture) string {
 	s, _ = sjson.Set(s, "picture.id="+pic.id+".title", pic.title)
 	s, _ = sjson.Set(s, "picture.id="+pic.id+".date.-1", pic.date)
 	s, _ = sjson.Set(s, "picture.id="+pic.id+".filename", pic.filename)
+	s, _ = sjson.Set(s, "picture.id="+pic.id+".favour", false)
 	return s
 }
 
-func NewPicture(title, id string) Picture {
+//NewPicture return the Picture struct
+func NewPicture(title, id, favour string) Picture {
 	return Picture{
-		Id:     strings.Split(id, ".")[0],
+		ID:     strings.Split(id, ".")[0],
 		Path:   fmt.Sprintf("/Pixiv/%s", id),
 		Title:  title,
 		Origin: id,
+		Favour: favour,
 	}
 }
 
+//LoadPictures load point pixiv mode picture
 func LoadPictures(p Pixiv) []Picture {
 	files := getJson(p)
 	list := make([]Picture, 0, len(files))
 	for _, f := range files {
 		check := strings.HasSuffix(f.Name, ".jpg") || strings.HasSuffix(f.Name, ".png")
 		if check {
-			list = append(list, NewPicture(f.Title, f.Name))
-		}
-		if _, err := os.Stat("./thumbnail/" + f.Name); os.IsNotExist(err) {
-			CompressImg("./thumbnail/", p.DownloadDir, f.Name)
+			list = append(list, NewPicture(f.Title, f.Name, f.Favour))
 		}
 	}
 	return list
+}
+
+func getFavour() []transform {
+	list := []transform{}
+	s := dataReader(DownloadPath)
+	gjson.Parse(gjson.Get(s, "picture").String()).ForEach(
+		func(key, value gjson.Result) bool {
+			if strings.HasPrefix(key.String(), "id=") {
+				//println(key.String())
+				if strings.Contains(gjson.Get(value.String(), "favour").String(), "true") {
+					filename := gjson.Get(value.String(), "filename").String()
+					title := gjson.Get(value.String(), "title").String()
+					list = append(list, transform{Title: title, Name: filename, Favour: "true"})
+				}
+				//println(value.String())
+			}
+			return true
+		})
+	return list
+}
+
+//SetFavour set favourite image
+func SetFavour(id string) {
+	s := dataReader(DownloadPath)
+	s, _ = sjson.Set(s, "picture."+id+".favour", true)
+	dataWriter(s, DownloadPath)
+}
+
+//RemoveFavour remove favourite image
+func RemoveFavour(id string) {
+	s := dataReader(DownloadPath)
+	s, _ = sjson.Set(s, "picture."+id+".favour", false)
+	dataWriter(s, DownloadPath)
 }

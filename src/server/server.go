@@ -3,6 +3,7 @@ package server
 import (
 	"Pixiv/src/pixiv"
 	"Pixiv/src/static"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -20,22 +21,28 @@ type ginServer struct {
 	c *cron.Cron
 }
 
+//Site information
 type Site struct {
 	Daily   string
 	Weekly  string
 	Monthly string
 }
 
+// LoadStatic Run the normal crawl
 func LoadStatic() {
 	daily.GetImageWithStrict()
 	weekly.GetImageWithStrict()
 	monthly.GetImageWithStrict()
+	pixiv.CompressAllImg(*daily)
+	pixiv.CompressAllImg(*weekly)
+	pixiv.CompressAllImg(*monthly)
 	pixiv.DeleteTmp()
 	daily.EncodeTar()
 	weekly.EncodeTar()
 	monthly.EncodeTar()
 }
 
+// New return a ginServer pointer
 func New() *ginServer {
 	return &ginServer{}
 }
@@ -43,7 +50,7 @@ func New() *ginServer {
 var daily, weekly, monthly *pixiv.Pixiv
 
 func exportStatic() {
-	dirs := []string{"view"} // 设置需要释放的目录
+	dirs := []string{"view"}
 	isSuccess := true
 	for _, dir := range dirs {
 		if err := static.RestoreAssets("./", dir); err != nil {
@@ -58,6 +65,7 @@ func exportStatic() {
 	}
 }
 
+//InitServer return a init server route group
 func (s *ginServer) InitServer() {
 	daily = pixiv.New("daily")
 	weekly = pixiv.New("weekly")
@@ -124,6 +132,7 @@ func (s *ginServer) InitServer() {
 		c.Header("Content-Disposition", "attachment; filename="+p.Mode+p.Date+".tar")
 		c.File("./tmp/" + p.Mode + p.Date + ".tar")
 	})
+	s.g.POST("/", favour)
 }
 
 var upGrader = websocket.Upgrader{
@@ -172,6 +181,22 @@ func reload(c *gin.Context) {
 	}
 }
 
+func favour(c *gin.Context) {
+
+	var id, favour string
+	fmt.Sscanf(c.PostForm("id"), "%s", &id)
+	fmt.Sscanf(c.PostForm("favour"), "%s", &favour)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "SUCCESS",
+	})
+	if favour == "true" {
+		pixiv.SetFavour(id)
+	} else if favour == "false" {
+		pixiv.RemoveFavour(id)
+	}
+}
+
+// Start to listen server
 func (s *ginServer) Start() {
 	s.c.Start()
 	defer s.c.Stop()

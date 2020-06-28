@@ -42,6 +42,7 @@ func dataWriter(s, path string) {
 	}
 }
 
+//EncodeTar tar designed mode pictures
 func (p Pixiv) EncodeTar() {
 	dirPath := "./tmp/"
 	filePath := dirPath + p.Mode + p.Date + ".tar"
@@ -110,8 +111,8 @@ func DeleteTmp() {
 	}
 }
 
+//CompressImg designated image
 func CompressImg(dstpath, srcpath string, name string) {
-	log.Println("start compress " + name)
 	file, err := os.Open(srcpath + name)
 	if err != nil {
 		log.Fatal(err)
@@ -131,23 +132,26 @@ func CompressImg(dstpath, srcpath string, name string) {
 
 	file.Close()
 
-	m := resize.Resize(800, 0, img, resize.NearestNeighbor)
+	m := resize.Thumbnail(800, 800, img, resize.Bilinear)
 	if _, err := os.Stat(dstpath); os.IsNotExist(err) {
 		os.Mkdir(dstpath, 0755)
 	}
-	out, err := os.OpenFile(dstpath+name, os.O_RDWR|os.O_CREATE, 0755)
+	out, err := os.OpenFile(dstpath+strings.Split(name, ".")[0]+".png", os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer out.Close()
 
 	png.Encode(out, m)
-	log.Println("compress finshed")
+	log.Println("compress " + strings.Split(name, ".")[0])
 }
 
+//CompressAllImg compress all image which not have thumbnail
 func CompressAllImg(p Pixiv) {
 	files := LoadPictures(p)
 	for _, img := range files {
-		CompressImg("./thumbnail/", p.DownloadDir, img.Origin)
+		if _, err := os.Stat("./thumbnail/" + img.ID + ".png"); os.IsNotExist(err) {
+			CompressImg("./thumbnail/", p.DownloadDir, img.Origin)
+		}
 	}
 }
