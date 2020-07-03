@@ -36,6 +36,8 @@ func dataReader(path string) string {
 }
 
 func dataWriter(s, path string) {
+	s = strings.Replace(s, " ", "", -1)
+	s = strings.Replace(s, "\n", "", -1)
 	err := ioutil.WriteFile(path+"Pixiv.json", []byte(s), 0664)
 	if err != nil {
 		log.Println("Write json err")
