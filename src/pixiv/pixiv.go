@@ -42,4 +42,5 @@ type Picture struct {
 	Title  string
 	Origin string
 	Favour string
+	Local  string
 }
