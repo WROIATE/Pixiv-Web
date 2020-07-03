@@ -1,0 +1,79 @@
+<div class="sticky-top p-0 mb-5 mr-0 navfadeIn">
+    <div style="position: relative;">
+        <div class="d-flex align-items-center justify-content-center sticky-nav">
+            {{$s := .Site}}
+            {{if $s.Favour}}
+            <div class="tag">
+                <nav class="nav nav-pills flex-sm-row justify-content-center m-auto">
+                    <div class="h5 m-0">我的收藏</div>
+                </nav>
+            </div>
+            <div class="back" style="position: absolute;left:2%">
+                <a class="pl-3" href="/"><span class="oi oi-home text-white"></span></a>
+            </div>
+        </div>
+        {{else if $s.Search}}
+        <div class="tag">
+            <nav class="nav nav-pills flex-sm-row justify-content-center m-auto">
+                <div class="h5 m-0">搜索</div>
+            </nav>
+        </div>
+        <div class="back" style="position: absolute;left:2%">
+            <a class="pl-3" href="/"><span class="oi oi-home text-white"></span></a>
+        </div>
+    </div>
+        {{else}}
+        <div class="tag">
+            <nav class="nav nav-pills flex-sm-row justify-content-center m-auto">
+                <a class="flex-sm-fill text-sm-center nav-link {{if $s.Daily}}active{{end}}" href="/daily">日榜</a>
+                <a class="flex-sm-fill text-sm-center nav-link {{if $s.Weekly}}active{{end}}" href="/weekly">周榜</a>
+                <a class="flex-sm-fill text-sm-center nav-link {{if $s.Monthly}}active{{end}}"
+                    href="/monthly">月榜</a>
+            </nav>
+        </div>
+        <div class="menu">
+            <a class="text-white m-1" href="/favour">
+                <span class="oi oi-heart"></span>
+            </a>
+            <a id="download" class="text-white m-1"
+                href="/download/{{if $s.Daily}}daily{{else if $s.Weekly}}weekly{{else if $s.Monthly}}monthly{{end}}">
+                <span class="oi oi-data-transfer-download"></span>
+            </a>
+            <a id="reload" class="text-white m-1" data-backdrop="static" data-toggle="modal" data-target="#progress"
+                href="javascript:void(0)">
+                <span class="oi oi-reload"></span>
+            </a>
+        </div>
+        <div class="input-group search">
+            <input type="text" class="form-control rounded-pill" placeholder="搜索">
+        </div>
+        <div class="sm-menu">
+            <a class="text-white btn p-0">
+                <span class="oi oi-menu"></span>
+            </a>
+        </div>
+    </div>
+    <div class="menu-drop" id="menu">
+        <div class="pr-4 pl-4 pb-4 pt-2 d-flex flex-column justify-content-between align-items-center">
+            <div class="input-group" style="max-width: 400px;">
+                <input type="text" class="form-control rounded-pill" placeholder="搜索">
+            </div>
+            <div class="mt-3">
+                <a href="/favour" class="text-white m-3">
+                    <span class="oi oi-heart" href="/favour"></span>
+                </a>
+                <a id="download" class="text-white m-3"
+                    href="/download/{{if $s.Daily}}daily{{else if $s.Weekly}}weekly{{else if $s.Monthly}}monthly{{end}}">
+                    <span class="oi oi-data-transfer-download"></span>
+                </a>
+                <a id="reload" class="text-white  m-3" data-backdrop="static" data-toggle="modal"
+                    data-target="#progress" href="javascript:void(0)">
+                    <span class="oi oi-reload"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    {{end}}
+</div>
+
+</div>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/open-iconic/font/css/open-iconic-bootstrap.css">
+    <link rel="stylesheet" href="/static/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <title>Pixiv Collections</title>
+</head>
+
+<body class="scrollbar">
+    <!--web head with background-->
+    {{ template "header.html" .}}
+    <!--sticky nav-->
+    {{ template "stickynav.html" .}}
+    <main>
+        <div class="container">
+            <!--image thumbnail-->
+            {{ template "thumbnail.html" .}}
+        </div>
+    </main>
+    <footer>
+        <div class="up" style="background:rgba(17, 17, 18, 0.8);">
+            <a class="btn"><span class="oi oi-chevron-top text-white"></span></a>
+        </div>
+        <div class="container" style="height: 200px;">
+            <h4 class="display-4 text-white text-center mt-5">End</h4>
+        </div>
+    </footer>
+
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/jquery.fancybox.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/index.js"></script>
+</body>
+
+</html>
