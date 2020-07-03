@@ -147,11 +147,37 @@ func CompressImg(dstpath, srcpath string, name string) {
 }
 
 //CompressAllImg compress all image which not have thumbnail
-func CompressAllImg(p Pixiv) {
+func CompressImgByMode(p Pixiv) {
 	files := LoadPictures(p)
 	for _, img := range files {
 		if _, err := os.Stat("./thumbnail/" + img.ID + ".png"); os.IsNotExist(err) {
 			CompressImg("./thumbnail/", p.DownloadDir, img.Origin)
+		}
+	}
+}
+
+func CleanSearchCache() {
+	list := LoadSearchData()
+	for _, i := range list {
+		os.Remove(DownloadPath + i.Origin)
+		os.Remove("./thumbnail/" + i.ID + ".png")
+		deleteByID(i.ID)
+	}
+}
+
+func CompressAllImg() {
+	files := FindAll()
+	for _, img := range files {
+		if _, err := os.Stat("./thumbnail/" + img.ID + ".png"); os.IsNotExist(err) {
+			CompressImg("./thumbnail/", DownloadPath, img.Origin)
+		}
+	}
+}
+
+func CheckThumbnail(files []Picture) {
+	for _, img := range files {
+		if _, err := os.Stat("./thumbnail/" + img.ID + ".png"); os.IsNotExist(err) {
+			CompressImg("./thumbnail/", DownloadPath, img.Origin)
 		}
 	}
 }
