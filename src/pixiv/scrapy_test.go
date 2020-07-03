@@ -6,6 +6,6 @@ import (
 )
 
 func TestScrapy(t *testing.T) {
-	p := New("weekly")
-	fmt.Println(LoadPictures(*p))
+	fmt.Print(FindByID("0"))
+	CleanSearchCache()
 }
