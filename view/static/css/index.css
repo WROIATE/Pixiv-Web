@@ -320,6 +320,7 @@ img.active {
     width: 100px;
     right: 2%;
     -webkit-transition: .3s cubic-bezier(.25, .46, .45, .94) all;
+    transition: .3s cubic-bezier(.25, .46, .45, .94) all;
 }
 
 .search:focus-within {
