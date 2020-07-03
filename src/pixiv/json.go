@@ -1,7 +1,9 @@
 package pixiv
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/tidwall/gjson"
@@ -64,6 +66,7 @@ func NewPicture(title, id, favour string) Picture {
 		Title:  title,
 		Origin: id,
 		Favour: favour,
+		Local:  "",
 	}
 }
 
@@ -99,6 +102,12 @@ func getFavour() []transform {
 	return list
 }
 
+func LoadFavour() []Picture {
+	list := loadFromTransform(getFavour())
+	CheckThumbnail(list)
+	return list
+}
+
 //SetFavour set favourite image
 func SetFavour(id string) {
 	s := dataReader(DownloadPath)
@@ -111,4 +120,133 @@ func RemoveFavour(id string) {
 	s := dataReader(DownloadPath)
 	s, _ = sjson.Set(s, "picture."+id+".favour", false)
 	dataWriter(s, DownloadPath)
+}
+
+func FindByID(id string) ([]Picture, error) {
+	p := New("")
+	s := dataReader(DownloadPath)
+	var pic Picture
+	local := true
+	if gjson.Get(s, "picture.id="+id).Exists() {
+		if strings.Contains(gjson.Get(s, "picture.id="+id+".date").String(), "cache") {
+			local = false
+		}
+	} else if getBySearchId(id, p) == 0 {
+		log.Println(id)
+		s = dataReader(DownloadPath)
+		local = false
+	} else {
+		return []Picture{}, errors.New("Can't find picture by id")
+	}
+	pic = NewPicture(gjson.Get(s, "picture.id="+id+".title").String(), gjson.Get(s, "picture.id="+id+".filename").String(), gjson.Get(s, "picture.id="+id+".favour").String())
+	if !local {
+		pic.Local = "false"
+	}
+	CheckThumbnail([]Picture{pic})
+	return []Picture{pic}, nil
+}
+
+func getSearchData() []transform {
+	list := []transform{}
+	s := dataReader(DownloadPath)
+	gjson.Parse(gjson.Get(s, "picture").String()).ForEach(
+		func(key, value gjson.Result) bool {
+			if strings.HasPrefix(key.String(), "id=") {
+				if strings.Contains(gjson.Get(value.String(), "date").String(), "cache") {
+					filename := gjson.Get(value.String(), "filename").String()
+					title := gjson.Get(value.String(), "title").String()
+					favour := gjson.Get(value.String(), "favour").String()
+					list = append(list, transform{Title: title, Name: filename, Favour: favour})
+				}
+			}
+			return true
+		})
+	return list
+}
+
+func LoadSearchData() []Picture {
+	list := loadFromTransform(getSearchData())
+	CheckThumbnail(list)
+	return list
+}
+
+func deleteByID(id string) {
+	s := dataReader(DownloadPath)
+	s, err := sjson.Delete(s, "picture.id="+id)
+	if err != nil {
+		log.Println(err)
+	} else {
+		dataWriter(s, DownloadPath)
+	}
+}
+
+func SaveByID(id string) {
+	s := dataReader(DownloadPath)
+	if strings.Contains(gjson.Get(s, "picture.id="+id+".date").String(), "cache") {
+		s, err := sjson.Set(s, "picture.id="+id+".date", []string{"search"})
+		if err != nil {
+			log.Println(err)
+		} else {
+			dataWriter(s, DownloadPath)
+		}
+	}
+}
+
+func getByFileName(keywords string) []transform {
+	list := []transform{}
+	s := dataReader(DownloadPath)
+	gjson.Parse(gjson.Get(s, "picture").String()).ForEach(
+		func(key, value gjson.Result) bool {
+			if strings.HasPrefix(key.String(), "id=") {
+				if strings.Contains(gjson.Get(value.String(), "title").String(), keywords) && !strings.Contains(gjson.Get(value.String(), "date").String(), "cache") {
+					filename := gjson.Get(value.String(), "filename").String()
+					title := gjson.Get(value.String(), "title").String()
+					favour := gjson.Get(value.String(), "favour").String()
+					list = append(list, transform{Title: title, Name: filename, Favour: favour})
+				}
+			}
+			return true
+		})
+	return list
+}
+
+func FindByFileName(keywords string) ([]Picture, error) {
+	list := loadFromTransform(getByFileName(keywords))
+	if len(list) != 0 {
+		CheckThumbnail(list)
+		return list, nil
+	}
+	return list, errors.New("Can't Find This File:" + keywords)
+}
+
+func loadFromTransform(files []transform) []Picture {
+	list := make([]Picture, 0, len(files))
+	for _, f := range files {
+		check := strings.HasSuffix(f.Name, ".jpg") || strings.HasSuffix(f.Name, ".png")
+		if check {
+			list = append(list, NewPicture(f.Title, f.Name, f.Favour))
+		}
+	}
+	return list
+}
+
+func getAll() []transform {
+	list := []transform{}
+	s := dataReader(DownloadPath)
+	gjson.Parse(gjson.Get(s, "picture").String()).ForEach(
+		func(key, value gjson.Result) bool {
+			if strings.HasPrefix(key.String(), "id=") {
+				filename := gjson.Get(value.String(), "filename").String()
+				title := gjson.Get(value.String(), "title").String()
+				favour := gjson.Get(value.String(), "favour").String()
+				list = append(list, transform{Title: title, Name: filename, Favour: favour})
+			}
+			return true
+		})
+	return list
+}
+
+func FindAll() []Picture {
+	list := loadFromTransform(getAll())
+	return list
 }
