@@ -80,14 +80,8 @@ func NewPicture(title, id, favour string) Picture {
 
 //LoadPictures load point pixiv mode picture
 func LoadPictures(p Pixiv) []Picture {
-	files := getJson(p)
-	list := make([]Picture, 0, len(files))
-	for _, f := range files {
-		check := strings.HasSuffix(f.Name, ".jpg") || strings.HasSuffix(f.Name, ".png")
-		if check {
-			list = append(list, NewPicture(f.Title, f.Name, f.Favour))
-		}
-	}
+	list := loadFromTransform(getJson(p))
+	CheckThumbnail(list)
 	return list
 }
 
@@ -110,6 +104,7 @@ func getFavour() []transform {
 	return list
 }
 
+//LoadFavour load favour page picture
 func LoadFavour() []Picture {
 	list := loadFromTransform(getFavour())
 	CheckThumbnail(list)
@@ -130,6 +125,7 @@ func RemoveFavour(id string) {
 	dataWriter(s, DownloadPath)
 }
 
+//FindByID Find a picture by its id
 func FindByID(id string) ([]Picture, error) {
 	p := New("")
 	s := dataReader(DownloadPath)
@@ -172,6 +168,7 @@ func getSearchData() []transform {
 	return list
 }
 
+//LoadSearchData Load search history
 func LoadSearchData() []Picture {
 	list := loadFromTransform(getSearchData())
 	CheckThumbnail(list)
@@ -188,6 +185,7 @@ func deleteByID(id string) {
 	}
 }
 
+//SaveByID Save picture to "search" from "cache"
 func SaveByID(id string) {
 	s := dataReader(DownloadPath)
 	if strings.Contains(gjson.Get(s, "picture.id="+id+".date").String(), "cache") {
@@ -218,6 +216,7 @@ func getByFileName(keywords string) []transform {
 	return list
 }
 
+//FindByFileName Find a picture by its keywords
 func FindByFileName(keywords string) ([]Picture, error) {
 	list := loadFromTransform(getByFileName(keywords))
 	if len(list) != 0 {
@@ -254,6 +253,7 @@ func getAll() []transform {
 	return list
 }
 
+//FindAll return all picture
 func FindAll() []Picture {
 	list := loadFromTransform(getAll())
 	return list
@@ -277,7 +277,8 @@ func importFromJson(s1, s2 string) string {
 					s2 = setOriginJson(s2, title, filename, id, list, favour)
 				} else if gjson.Get(s2, "picture.id="+id+".favour").String() == "" {
 					fmt.Println(id)
-					s2, _ = sjson.Set(s2, "picture.id="+id+".favour", false)
+					s2, _ = sjson.Set(s2, "picture.id="+id+".favour", favour)
+					s2, _ = sjson.Set(s2, "picture.id="+id+".date", list)
 				}
 			}
 			return true
