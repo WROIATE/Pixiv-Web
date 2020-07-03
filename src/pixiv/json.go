@@ -58,6 +58,14 @@ func setJson(s string, pic picture) string {
 	return s
 }
 
+func setOriginJson(s, Title, FileName, ID string, Date []string, Favour bool) string {
+	s, _ = sjson.Set(s, "picture.id="+ID+".title", Title)
+	s, _ = sjson.Set(s, "picture.id="+ID+".date.-1", Date)
+	s, _ = sjson.Set(s, "picture.id="+ID+".filename", FileName)
+	s, _ = sjson.Set(s, "picture.id="+ID+".favour", Favour)
+	return s
+}
+
 //NewPicture return the Picture struct
 func NewPicture(title, id, favour string) Picture {
 	return Picture{
@@ -249,4 +257,30 @@ func getAll() []transform {
 func FindAll() []Picture {
 	list := loadFromTransform(getAll())
 	return list
+}
+
+func importFromJson(s1, s2 string) string {
+	gjson.Parse(gjson.Get(s1, "picture").String()).ForEach(
+		func(key, value gjson.Result) bool {
+			if strings.HasPrefix(key.String(), "id=") {
+				filename := gjson.Get(value.String(), "filename").String()
+				title := gjson.Get(value.String(), "title").String()
+				favour := gjson.Get(value.String(), "favour").Bool()
+				date := gjson.Get(value.String(), "date")
+				id := strings.Split(filename, ".")[0]
+				list := make([]string, 0)
+				date.ForEach(func(key, value gjson.Result) bool {
+					list = append(list, value.String())
+					return true
+				})
+				if !gjson.Get(s2, "picture.id="+id).Exists() {
+					s2 = setOriginJson(s2, title, filename, id, list, favour)
+				} else if gjson.Get(s2, "picture.id="+id+".favour").String() == "" {
+					fmt.Println(id)
+					s2, _ = sjson.Set(s2, "picture.id="+id+".favour", false)
+				}
+			}
+			return true
+		})
+	return s2
 }
