@@ -234,6 +234,9 @@ func loadFromTransform(files []transform) []Picture {
 			list = append(list, NewPicture(f.Title, f.Name, f.Favour))
 		}
 	}
+	if len(list) > 50 {
+		return list[len(list)-50 : len(list)]
+	}
 	return list
 }
 
