@@ -148,7 +148,7 @@ func CompressImg(dstpath, srcpath string, name string) {
 	log.Println("compress " + strings.Split(name, ".")[0])
 }
 
-//CompressAllImg compress all image which not have thumbnail
+//CompressImgByMode compress image which not have thumbnail
 func CompressImgByMode(p Pixiv) {
 	files := LoadPictures(p)
 	for _, img := range files {
@@ -158,6 +158,7 @@ func CompressImgByMode(p Pixiv) {
 	}
 }
 
+//CleanSearchCache Remove search thumbnail
 func CleanSearchCache() {
 	list := LoadSearchData()
 	for _, i := range list {
@@ -167,6 +168,7 @@ func CleanSearchCache() {
 	}
 }
 
+//CompressAllImg create thumbnail
 func CompressAllImg() {
 	files := FindAll()
 	for _, img := range files {
@@ -176,6 +178,7 @@ func CompressAllImg() {
 	}
 }
 
+//CheckThumbnail check if the thumbnail exist
 func CheckThumbnail(files []Picture) {
 	for _, img := range files {
 		if _, err := os.Stat("./thumbnail/" + img.ID + ".png"); os.IsNotExist(err) {
