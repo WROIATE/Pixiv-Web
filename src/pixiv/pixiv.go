@@ -2,6 +2,7 @@ package pixiv
 
 import "os"
 
+//Pixiv the pixiv spider class
 type Pixiv struct {
 	Mode        string
 	Date        string
@@ -11,6 +12,9 @@ type Pixiv struct {
 	Msg         chan int
 }
 
+//DownloadPath "./PixivDownload/"
+const DownloadPath string = "./PixivDownload/"
+
 type picture struct {
 	id       string
 	date     string
@@ -19,19 +23,24 @@ type picture struct {
 }
 
 type transform struct {
-	Title string
-	Name  string
+	Title  string
+	Name   string
+	Favour string
 }
 
+// New return a Pixiv pointer
 func New(mode string) *Pixiv {
 	dir := "./PixivDownload/"
 	os.Mkdir(dir, os.ModePerm)
-	return &Pixiv{mode, "", dir, "", 0, make(chan int)}
+	return &Pixiv{mode, DateFormat(mode), dir, "", 0, make(chan int)}
 }
 
+//Picture site struct
 type Picture struct {
-	Id     string
+	ID     string
 	Path   string
 	Title  string
 	Origin string
+	Favour string
+	Local  string
 }

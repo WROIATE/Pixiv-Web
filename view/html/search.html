@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/open-iconic/font/css/open-iconic-bootstrap.css">
+    <link rel="stylesheet" href="/static/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <title>Pixiv Collections</title>
+</head>
+
+<body class="scrollbar">
+    <!--web head with background-->
+    {{ template "header.html" .}}
+    <!--sticky nav-->
+    {{ template "stickynav.html" .}}
+    <main>
+        <div class="container">
+            <div class="input-group m-auto pb-5" style="max-width: 400px">
+                <input type="text" class="form-control rounded-pill" style="background-color: rgb(18, 19, 19);"
+                    placeholder="搜索">
+            </div>
+            <div class="m-auto pb-5" id="result" style="max-width:100%">
+                {{$k := .keyWords}}
+                {{range $index,$r := .Result}}
+                    {{if eq $index 0}}
+                    <div class="h4 text-white text-center">{{if $k}}“{{$k}}”的{{end}}搜索结果{{end}}{{if eq (inc $index) 1}}</div>
+                    <div class="result">
+                        <figure class="m-1">
+                            <a data-fancybox="gallery-result" href="/Pixiv/{{$r.Origin}}">
+                                <img class="card-img rounded-sm m-auto" {{if eq $r.Local `false`}} local="false" {{else}} local="true" {{end}}
+                                favour={{$r.Favour}} id={{$r.ID}} title={{$r.Title}} data-src="/thumbnail/{{$r.ID}}.png" alt="">
+                            </a>
+                        </figure>
+                    {{else}}
+                        <figure class="m-1">
+                    <a data-fancybox="gallery-result" href="/Pixiv/{{$r.Origin}}">
+                        <img class="card-img rounded-sm m-auto" {{if eq $r.Local `false`}} local="false" {{else}} local="true" {{end}}
+                         favour={{$r.Favour}} id={{$r.ID}} title={{$r.Title}} data-src="/thumbnail/{{$r.ID}}.png" alt="">
+                    </a>
+                        </figure>
+                    {{end}}
+                {{else}}
+                    <div class="h4 text-white">搜索结果</div>
+                    <div class="h5 text-white">未找到对应作品{{end}}</div>
+            </div>
+        <div class="d-flex">
+            <div class="h4 text-white">历史未保存图片</div>
+            <div class="btn text-white" id="clean"><span class="oi oi-trash"></span>清空</div>
+        </div>
+        <!--image thumbnail-->
+        {{ template "thumbnail.html" .}}
+        </div>
+    </main>
+    <footer>
+        <div class="up" style="background:rgba(17, 17, 18, 0.8);">
+            <a class="btn"><span class="oi oi-chevron-top text-white"></span></a>
+        </div>
+        <div class="container" style="height: 200px;">
+            <h4 class="display-4 text-white text-center mt-5">End</h4>
+        </div>
+    </footer>
+    <div class="toastArea m-auto" style="z-index: 100000;width:100px;position: fixed; top: 10%; right: 50px">
+    </div>
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/jquery.fancybox.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/index.js"></script>
+</body>
+
+</html>

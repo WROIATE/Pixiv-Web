@@ -5,12 +5,12 @@ import (
 	"time"
 )
 
+//WeekByDate return the week number
 func WeekByDate(t time.Time) string {
 	yearDay := t.YearDay()
 	yearFirstDay := t.AddDate(0, 0, -yearDay+1)
 	firstDayInWeek := int(yearFirstDay.Weekday())
 
-	//今年第一周有几天
 	firstWeekDays := 1
 	if firstDayInWeek != 0 {
 		firstWeekDays = 7 - firstDayInWeek + 1
@@ -24,6 +24,7 @@ func WeekByDate(t time.Time) string {
 	return string(fmt.Sprintf("%d", week))
 }
 
+//DateFormat return the formated date
 func DateFormat(mode string) string {
 	if mode == "weekly" {
 		return fmt.Sprintf("-%d-%s", time.Now().Year(), WeekByDate(time.Now()))

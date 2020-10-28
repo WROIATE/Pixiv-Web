@@ -1,0 +1,18 @@
+<div class="card-columns">
+    {{$s := .Site}}
+    {{range $picture := .Pictures}}
+    <div class="card border-0 mb-3 shadow card-background">
+        <a data-fancybox="{{if $s.Search}}gallery-search{{else}}gallery{{end}}" href={{$picture.Path}}>
+            <div class="sliderpic">
+                <img class="card-img rounded-sm" id={{$picture.ID}} favour={{$picture.Favour}} title={{$picture.Title}} src="/thumbnail/{{$picture.ID}}.png" alt="">
+                <div class="pic-info m-2 sliderinfo">
+                    <div class="post-title">{{$picture.Title}}</div>
+                    <div class="id">id={{$picture.ID}}</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {{else}}
+    <div class="h4">未找到呢亲~</div>
+    {{end}}
+</div>
