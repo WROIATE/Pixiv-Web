@@ -34,9 +34,9 @@ type Site struct {
 
 // LoadStatic Run the normal crawl
 func LoadStatic() {
-	daily.GetImageWithStrict()
-	weekly.GetImageWithStrict()
-	monthly.GetImageWithStrict()
+	daily.GetImage()
+	weekly.GetImage()
+	monthly.GetImage()
 	pixiv.CompressImgByMode(*daily)
 	pixiv.CompressImgByMode(*weekly)
 	pixiv.CompressImgByMode(*monthly)

@@ -25,7 +25,7 @@ func (p *Pixiv) scrapy(mode, id string) {
 	c.Wait()
 }
 
-//Crawl image directly
+//Crawl image by reload api
 func (p *Pixiv) Crawl() {
 	p.DataSwap = dataReader(p.DownloadDir)
 	p.Date = DateFormat(p.Mode)
@@ -57,6 +57,20 @@ func (p *Pixiv) GetImageWithStrict() {
 	p.DataSwap = ""
 }
 
+//GetImage directly download image
+func (p *Pixiv) GetImage() {
+	p.DataSwap = dataReader(p.DownloadDir)
+	p.Date = DateFormat(p.Mode)
+	p.scrapy("", "")
+	p.DataSwap, _ = sjson.Set(p.DataSwap, "date."+p.Mode, p.Date)
+	dataWriter(p.DataSwap, p.DownloadDir)
+	if p.Status != 0 {
+		log.Println(p.Mode + p.Date + fmt.Sprintf(" Have some download failed:%d", p.Status))
+		p.Status = 0
+	}
+	p.DataSwap = ""
+}
+
 func (p *Pixiv) newScrapy(mode string) *colly.Collector {
 	c := colly.NewCollector(
 		colly.MaxBodySize(1024*1024*1024),
@@ -69,9 +83,11 @@ func (p *Pixiv) newScrapy(mode string) *colly.Collector {
 	c.Limit(&colly.LimitRule{Parallelism: 8})
 	c.OnResponse(func(r *colly.Response) {
 		if strings.Contains(r.Request.URL.String(), "ranking") {
+			p.DataSwap, _ = sjson.Delete(p.DataSwap, "rank."+p.Mode)
 			for i := 0; i < 50; i++ {
 				id := gjson.GetBytes(r.Body, fmt.Sprintf("contents.%d.illust_id", i)).String()
 				if id != "" {
+					p.DataSwap, _ = sjson.Set(p.DataSwap, "rank."+p.Mode+".-1", "id="+id)
 					if gjson.Get(p.DataSwap, "picture.id="+id).Exists() {
 						//fmt.Println(fmt.Sprintf(`picture.id=%s.#(date.#(=="%s"))#.id`, id, mode+"-2020-4-11"))
 						log.Println(id + " already exsited")
@@ -110,10 +126,10 @@ func (p *Pixiv) newScrapy(mode string) *colly.Collector {
 			} else {
 				mutex.Lock()
 				if mode != "search" {
-					p.DataSwap = setJson(p.DataSwap, picture{r.Ctx.Get("id"), p.Mode + p.Date, r.Ctx.Get("name"), fmt.Sprintf("%s.%s", r.Ctx.Get("id"), cleanExt[1:])})
+					p.DataSwap = setMetaData(p.DataSwap, picture{r.Ctx.Get("id"), p.Mode + p.Date, r.Ctx.Get("name"), fmt.Sprintf("%s.%s", r.Ctx.Get("id"), cleanExt[1:])})
 					p.Status--
 				} else {
-					p.DataSwap = setJson(p.DataSwap, picture{r.Ctx.Get("id"), "cache", r.Ctx.Get("name"), fmt.Sprintf("%s.%s", r.Ctx.Get("id"), cleanExt[1:])})
+					p.DataSwap = setMetaData(p.DataSwap, picture{r.Ctx.Get("id"), "cache", r.Ctx.Get("name"), fmt.Sprintf("%s.%s", r.Ctx.Get("id"), cleanExt[1:])})
 				}
 				CompressImg("./thumbnail/", p.DownloadDir, fmt.Sprintf("%s.%s", r.Ctx.Get("id"), cleanExt[1:]))
 				log.Println(r.Ctx.Get("id") + fmt.Sprintf(" Download finished, Remaining num:%d", p.Status))
@@ -143,7 +159,7 @@ func (p *Pixiv) newScrapy(mode string) *colly.Collector {
 	return c
 }
 
-func getBySearchId(id string, p *Pixiv) int {
+func getBySearchID(id string, p *Pixiv) int {
 	p.DataSwap = dataReader(p.DownloadDir)
 	p.scrapy("search", id)
 	dataWriter(p.DataSwap, p.DownloadDir)
