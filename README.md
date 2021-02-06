@@ -13,7 +13,7 @@
 ![img](screenshot/2.png)
 ![img](screenshot/3.png)
 #### Warning:
-请确认自身网络能够访问[Pixiv](www.pixiv.net)
+请确认自身网络能够访问[Pixiv](https://www.pixiv.net)
 #### Acknowledgments:
 * [fancyBox](https://github.com/fancyapps/fancybox)
 * [gin](https://github.com/gin-gonic/gin)
